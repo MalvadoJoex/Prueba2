@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto8
+  
+  pre_build:
+    commands:
+      - echo Build started on `date`
+      - java -version 
+      - echo $env:Path
+      - echo $env:JAVA_HOME
+
+  build:
+    commands:
+      - echo "Running Test Automation EKT Front"
+      - gradle -version 
+      - ./gradle build
+      
+  post_build:
+    finally:
+      - rm -f  /root/.gradle/caches/modules-2/modules-2.lock
+      - rm -fr /root/.gradle/caches/*/plugin-resolution/

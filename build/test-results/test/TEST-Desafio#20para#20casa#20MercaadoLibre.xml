@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Desafio para casa MercaadoLibre" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-08-31T04:21:46" hostname="DESKTOP-E4MME3V" time="14.045">
+  <properties/>
+  <testcase name="Busqueda y filtro de consola" classname="Desafio para casa MercaadoLibre" time="14.045"/>
+  <system-out><![CDATA[El texto del elemento 1 es: Playstation 5
+El texto del elemento 2 es: Consola Sony Ps5 Play Station 5 Incluye Control Original
+El texto del elemento 3 es: Sony Playstation 5 C/lectora 825 Gb + Joystick De
+El texto del elemento 4 es: Consola Playstation 5 Spiderman 2 Edition 1tb Cfi-1216a Color Negro - Rojo
+El texto del elemento 5 es: Consola Playstation 5 825gb Standard Incluye Control
+]]></system-out>
+  <system-err><![CDATA[ago 30, 2024 11:21:48 P. M. org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+WARNING: Unable to find CDP implementation matching 128
+ago 30, 2024 11:21:48 P. M. org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+WARNING: Unable to find version of CDP to use for 128.0.6613.113. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.19.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+]]></system-err>
+</testsuite>
