@@ -12,7 +12,7 @@ import pages.BasePage;
     glue = "steps",
     plugin = {"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:" /*"json:cucumber-report.json"*/},
     monochrome = true,
-    tags = ("@DesafioCasa")
+    tags = ("") //@DesafioCasa
     )
   
 public class Runner {
