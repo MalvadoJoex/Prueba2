@@ -11,7 +11,9 @@ import pages.BasePage;
     features =  "src/test/resources/features",
     glue = "steps",
     plugin = {"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:" /*"json:cucumber-report.json"*/},
-    monochrome = true //@DesafioCasa
+    monochrome = true,
+    tags = System.getProperty("cucumber.options")
+     //@DesafioCasa
     )
   
 public class Runner {
