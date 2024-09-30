@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // Detecta los tags modificados o añadidos y ejecuta las pruebas relacionadas
-                    bat './gradlew test -Dcucumber.filter.tags="@tag2 or @DesafioCasa or @TodoTDD_TDC or @TodoMisPedidos or @TodoAyuda"'
+                    bat './gradlew test -Dcucumber.filter.tags="@tag3 or @DesafioCasa or @TodoTDD_TDC or @TodoMisPedidos or @TodoAyuda"'
                 }
             }
         }
