@@ -1,4 +1,4 @@
-@tag6
+@tag4
 Feature: Desafio para casa MercaadoLibre
  
 

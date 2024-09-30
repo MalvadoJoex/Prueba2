@@ -58,35 +58,67 @@ pipeline {
         //     }
         // }
 ///
-            stage('Detectar Cambios en las Pruebas') {
-        steps {
-            script {
-                eTAGS = []
-                // Obtén los archivos cambiados en el commit más reciente
-                def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+    //         stage('Detectar Cambios en las Pruebas') {
+    //     steps {
+    //         script {
+    //             eTAGS = []
+    //             // Obtén los archivos cambiados en el commit más reciente
+    //             def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
-                // Filtra los archivos queson pruebas y que contienen tags
-                changedFiles.each { file ->
-                    if (file.endsWith(".feature")) {
-                        // Verifica si el archivo existe antes de buscar etiquetas
-                        if (fileExists(file)) {
-                            // Verifica el contenido del archivo
-                            bat "type \"${file}\""
+    //             // Filtra los archivos queson pruebas y que contienen tags
+    //             changedFiles.each { file ->
+    //                 if (file.endsWith(".feature")) {
+    //                     // Verifica si el archivo existe antes de buscar etiquetas
+    //                     if (fileExists(file)) {
+    //                         // Verifica el contenido del archivo
+    //                         bat "type \"${file}\""
 
-                            // Extraer los tags dentro de los archivos modificados
-                            def tagsInFile = bat(script: "findstr /o \"@tag6\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
-                            if (tagsInFile) {
-                                TAGS += tagsInFile + " "
+    //                         // Extraer los tags dentro de los archivos modificados
+    //                         def tagsInFile = bat(script: "findstr /o \"@tag6\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
+    //                         if (tagsInFile) {
+    //                             TAGS += tagsInFile + " "
+    //                         }
+    //                     } else {
+    //                         echo "El archivo ${file} no se encontró."
+    //                     }
+    //                 }
+    //             }
+    //             echo "Tags a ejecutar: ${TAGS.join(', ')}"
+    //         }
+    //     }
+    // }
+
+    stage('Detectar Cambios en las Pruebas') {
+            steps {
+                script {
+                    // Cambiamos TAGS a una variable global
+                    TAGS = []
+                    // Obtén los archivos cambiados en el commit más reciente
+                    def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+
+                    // Filtra los archivos que son pruebas y que contienen tags
+                    changedFiles.each { file ->
+                        if (file.endsWith(".feature")) {
+                            // Verifica si el archivo existe antes de buscar etiquetas
+                            if (fileExists(file)) {
+                                // Verifica el contenido del archivo
+                                bat "type \"${file}\""
+
+                                // Extraer los tags dentro de los archivos modificados
+                                def tagsInFile = bat(script: "findstr /o \"@tag4\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
+                                echo "El tag encongtrado es: ${tagsInFile}"
+                                if (tagsInFile) {
+                                    TAGS += tagsInFile + " "
+                                }
+                            } else {
+                                echo "El archivo ${file} no se encontró."
                             }
-                        } else {
-                            echo "El archivo ${file} no se encontró."
                         }
                     }
+                    echo "Tags a ejecutar: ${TAGS.join(', ')}"
                 }
-                echo "Tags a ejecutar: ${TAGS.join(', ')}"
             }
         }
-    }
     
 //
         // stage('Ejecutar Pruebas Modificadas') {
