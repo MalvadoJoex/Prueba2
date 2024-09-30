@@ -24,21 +24,23 @@ pipeline {
             }
         }
         
-         stage('Detectar Cambios en las Pruebas') {
+        stage('Detectar Cambios en las Pruebas') {
             steps {
                 script {
-                    // Definimos TAGS como una variable global
                     TAGS = []  // Inicializar TAGS como una lista
-                    // Obtén los archivos cambiados en el commit más reciente
                     def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
-                    // Filtra los archivos que son pruebas y que contienen tags
                     changedFiles.each { file ->
                         if (file.endsWith(".feature")) {
-                            // Verifica si el archivo existe antes de buscar etiquetas
+                            // Construir la ruta completa
                             def filePath = "${env.WORKSPACE}/${file}"
+
+                            // Imprimir la ruta para depuración
+                            echo "Verificando archivo: ${filePath}"
+
+                            // Verifica si el archivo existe antes de buscar etiquetas
                             if (fileExists(filePath)) {
-                                // Verifica el contenido del archivo
+                                // Mostrar el contenido del archivo
                                 bat "type \"${filePath}\""
 
                                 // Extraer los tags dentro de los archivos modificados
