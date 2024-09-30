@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     // Lista los archivos en el directorio donde se esperan las pruebas
-                    bat 'dir src/test/resources/features'
+                    bat 'cmd /c dir src\\test\\resources\\features'
                 }
             }
         }
