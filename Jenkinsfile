@@ -57,7 +57,7 @@ pipeline {
         //         }
         //     }
         // }
-
+//
             stage('Detectar Cambios en las Pruebas') {
         steps {
             script {
