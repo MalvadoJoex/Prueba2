@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     // Lista los archivos en el directorio donde se esperan las pruebas
-                    bat 'cmd /c dir src\\test\\resources\\features'
+                    bat 'cmd /c dir src\\test\\resources\\features' 
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
                     // Verifica si el archivo existe antes de buscar etiquetas
                     if (fileExists(file)) {
                         // Extraer los tags dentro de los archivos modificados
-                        def tagsInFile = bat(script: "findstr /o '@tag[0-9]' ${file}", returnStdout: true).trim()
+                         def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${file}\"", returnStdout: true).trim()
                         if (tagsInFile) {
                             TAGS += tagsInFile + " "
                         }
