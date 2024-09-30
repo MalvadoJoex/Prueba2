@@ -77,7 +77,9 @@ pipeline {
                             def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
                             if (tagsInFile) {
                                 TAGS += tagsInFile + " "
+                                
                             }
+                            bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
                         } else {
                             echo "El archivo ${file} no se encontró."
                         }
@@ -89,18 +91,18 @@ pipeline {
     }
     
 //
-        stage('Ejecutar Pruebas Modificadas') {
-            steps {
-                script {
-                    if (TAGS && TAGS.trim()) {  // Verifica que TAGS no esté vacío
-                        // Ejecuta solo las pruebas etiquetadas que fueron modificadas
-                        bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
-                    } else {
-                        echo "No hay pruebas modificadas para ejecutar."
-                    }
-                }
-            }
-        }
+        // stage('Ejecutar Pruebas Modificadas') {
+        //     steps {
+        //         script {
+        //             if (TAGS && TAGS.trim()) {  // Verifica que TAGS no esté vacío
+        //                 // Ejecuta solo las pruebas etiquetadas que fueron modificadas
+        //                 bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
+        //             } else {
+        //                 echo "No hay pruebas modificadas para ejecutar."
+        //             }
+        //         }
+        //     }
+        // }
 
         
         stage('Generar Reporte HTML') {
