@@ -16,14 +16,14 @@ pipeline {
         }
         
         // Stage para instalar las dependencias y preparar el entorno
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    // Limpia el proyecto y construye el entorno con las dependencias necesarias
-                    bat './gradlew clean build'
-                }
-            }
-        }
+        // stage('Install Dependencies') {
+        //     steps {
+        //         script {
+        //             // Limpia el proyecto y construye el entorno con las dependencias necesarias
+        //             bat './gradlew clean build'
+        //         }
+        //     }
+        // }
 
         stage('Detectar Cambios en las Pruebas') {
             steps {
