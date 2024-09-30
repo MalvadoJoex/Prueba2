@@ -4,7 +4,7 @@ pipeline {
     environment {
         GRADLE_HOME = "c:/Gradle"  // Ajusta según la ruta de instalación de Gradle en tu sistema
         PATH = "$GRADLE_HOME/bin:$PATH"
-        TAGS = ""
+        TAGS = ''
     }
 
     stages {
