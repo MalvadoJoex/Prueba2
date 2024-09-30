@@ -10,7 +10,8 @@ import pages.BasePage;
 @CucumberOptions(
     features =  "src/test/resources/features",
     glue = "steps",
-    plugin = {"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:" /*"json:cucumber-report.json"*/},
+    //plugin = {"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:" /*"json:cucumber-report.json"*/},
+    plugin = {"pretty", "json:target/cucumber.json"},
     monochrome = true,
     tags = "@tag3 or @DesafioCasa or @TodoTDD_TDC or @TodoMisPedidos or @TodoAyuda"
     )
