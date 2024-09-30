@@ -24,7 +24,7 @@ pipeline {
             }
         }
         
-        stage('Detectar Cambios en las Pruebas') {
+stage('Detectar Cambios en las Pruebas') {
     steps {
         script {
             def TAGS = []
@@ -36,8 +36,11 @@ pipeline {
                 if (file.endsWith(".feature")) {
                     // Verifica si el archivo existe antes de buscar etiquetas
                     if (fileExists(file)) {
+                        // Verifica el contenido del archivo
+                        bat "type \"${file}\""
+
                         // Extraer los tags dentro de los archivos modificados
-                         def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${file}\"", returnStdout: true).trim()
+                        def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
                         if (tagsInFile) {
                             TAGS += tagsInFile + " "
                         }
