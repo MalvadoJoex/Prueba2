@@ -24,10 +24,11 @@ pipeline {
             }
         }
         
-        stage('Detectar Cambios en las Pruebas') {
+         stage('Detectar Cambios en las Pruebas') {
             steps {
                 script {
-                    def TAGS = []
+                    // Definimos TAGS como una variable global
+                    TAGS = []  // Inicializar TAGS como una lista
                     // Obtén los archivos cambiados en el commit más reciente
                     def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
@@ -35,17 +36,18 @@ pipeline {
                     changedFiles.each { file ->
                         if (file.endsWith(".feature")) {
                             // Verifica si el archivo existe antes de buscar etiquetas
-                            if (fileExists(file)) {
+                            def filePath = "${env.WORKSPACE}/${file}"
+                            if (fileExists(filePath)) {
                                 // Verifica el contenido del archivo
-                                bat "type \"${file}\""
+                                bat "type \"${filePath}\""
 
                                 // Extraer los tags dentro de los archivos modificados
-                                def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
+                                def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${filePath}\"", returnStdout: true).trim()
                                 if (tagsInFile) {
                                     TAGS += tagsInFile + " "
                                 }
                             } else {
-                                echo "El archivo ${file} no se encontró."
+                                echo "El archivo ${filePath} no se encontró."
                             }
                         }
                     }
