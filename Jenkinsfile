@@ -4,7 +4,7 @@ pipeline {
     environment {
         GRADLE_HOME = "c:/Gradle"  // Ajusta según la ruta de instalación de Gradle en tu sistema
         PATH = "$GRADLE_HOME/bin:$PATH"
-        TAGS = ''
+        TAGS = ''  // Inicialización de TAGS como una cadena vacía
     }
 
     stages {
@@ -24,40 +24,41 @@ pipeline {
             }
         }
         
-stage('Detectar Cambios en las Pruebas') {
-    steps {
-        script {
-            def TAGS = []
-            // Obtén los archivos cambiados en el commit más reciente
-            def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+        stage('Detectar Cambios en las Pruebas') {
+            steps {
+                script {
+                    // Cambiamos TAGS a una variable global
+                    TAGS = []  // Reasignar TAGS como una lista
+                    // Obtén los archivos cambiados en el commit más reciente
+                    def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
-            // Filtra los archivos que son pruebas y que contienen tags
-            changedFiles.each { file ->
-                if (file.endsWith(".feature")) {
-                    // Verifica si el archivo existe antes de buscar etiquetas
-                    if (fileExists(file)) {
-                        // Verifica el contenido del archivo
-                        bat "type \"${file}\""
+                    // Filtra los archivos que son pruebas y que contienen tags
+                    changedFiles.each { file ->
+                        if (file.endsWith(".feature")) {
+                            // Verifica si el archivo existe antes de buscar etiquetas
+                            if (fileExists(file)) {
+                                // Verifica el contenido del archivo
+                                bat "type \"${file}\""
 
-                        // Extraer los tags dentro de los archivos modificados
-                        def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
-                        if (tagsInFile) {
-                            TAGS += tagsInFile + " "
+                                // Extraer los tags dentro de los archivos modificados
+                                def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
+                                if (tagsInFile) {
+                                    TAGS += tagsInFile + " "
+                                }
+                            } else {
+                                echo "El archivo ${file} no se encontró."
+                            }
                         }
-                    } else {
-                        echo "El archivo ${file} no se encontró."
                     }
+                    echo "Tags a ejecutar: ${TAGS.join(', ')}"
                 }
             }
-            echo "Tags a ejecutar: ${TAGS.join(', ')}"
         }
-    }
-}
 
         stage('Ejecutar Pruebas Modificadas') {
             steps {
                 script {
-                    if (TAGS) {
+                    if (TAGS && TAGS.trim()) {  // Verifica que TAGS no esté vacío
                         // Ejecuta solo las pruebas etiquetadas que fueron modificadas
                         bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
                     } else {
@@ -66,6 +67,8 @@ stage('Detectar Cambios en las Pruebas') {
                 }
             }
         }
+
+
         stage('Generar Reporte HTML') {
             steps {
                 // Genera el reporte HTML de las pruebas ejecutadas
