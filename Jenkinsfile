@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GRADLE_HOME = "/usr/share/gradle"  // Ajusta según la ruta de instalación de Gradle en tu sistema
+        GRADLE_HOME = "c:/Gradle"  // Ajusta según la ruta de instalación de Gradle en tu sistema
         PATH = "$GRADLE_HOME/bin:$PATH"
     }
 
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     // Limpia el proyecto y construye el entorno con las dependencias necesarias
-                    sh './gradlew clean build'
+                    bat './gradlew clean build'
                 }
             }
         }
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // Detecta los tags modificados o añadidos y ejecuta las pruebas relacionadas
-                    sh './gradlew test -Dcucumber.filter.tags="@tag3 or @DesafioCasa or @TodoTDD_TDC or @TodoMisPedidos or @TodoAyuda"'
+                    bat './gradlew test -Dcucumber.filter.tags="@tag2 or @DesafioCasa or @TodoTDD_TDC or @TodoMisPedidos or @TodoAyuda"'
                 }
             }
         }
