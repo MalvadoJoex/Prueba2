@@ -4,7 +4,7 @@ pipeline {
     environment {
         GRADLE_HOME = "c:/Gradle"  // Ajusta según la ruta de instalación de Gradle en tu sistema
         PATH = "$GRADLE_HOME/bin:$PATH"
-        env.TAGS = ''
+        TAGS = ''
     }
 
     stages {
@@ -61,11 +61,11 @@ pipeline {
             stage('Detectar Cambios en las Pruebas') {
         steps {
             script {
-                env.TAGS = []
+                eTAGS = []
                 // Obtén los archivos cambiados en el commit más reciente
                 def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
-                // Filtra los archivos que son pruebas y que contienen tags
+                // Filtra los archivos queson pruebas y que contienen tags
                 changedFiles.each { file ->
                     if (file.endsWith(".feature")) {
                         // Verifica si el archivo existe antes de buscar etiquetas
