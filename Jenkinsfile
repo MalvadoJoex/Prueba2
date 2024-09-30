@@ -4,7 +4,7 @@ pipeline {
     environment {
         GRADLE_HOME = "c:/Gradle"  // Ajusta según la ruta de instalación de Gradle en tu sistema
         PATH = "$GRADLE_HOME/bin:$PATH"
-        TAGS = ''  // Inicialización de TAGS como una cadena vacía
+        TAGS = ''
     }
 
     stages {
@@ -27,8 +27,7 @@ pipeline {
         stage('Detectar Cambios en las Pruebas') {
             steps {
                 script {
-                    // Cambiamos TAGS a una variable global
-                    TAGS = []  // Reasignar TAGS como una lista
+                    def TAGS = []
                     // Obtén los archivos cambiados en el commit más reciente
                     def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
@@ -68,7 +67,7 @@ pipeline {
             }
         }
 
-
+        
         stage('Generar Reporte HTML') {
             steps {
                 // Genera el reporte HTML de las pruebas ejecutadas
