@@ -74,12 +74,10 @@ pipeline {
                             bat "type \"${file}\""
 
                             // Extraer los tags dentro de los archivos modificados
-                            def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
+                            def tagsInFile = bat(script: "findstr /o \"@tag6\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
                             if (tagsInFile) {
                                 TAGS += tagsInFile + " "
-                                
                             }
-                            bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
                         } else {
                             echo "El archivo ${file} no se encontró."
                         }
