@@ -14,17 +14,16 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/MalvadoJoex/Prueba2.git'
             }
         }
-        
-        // Stage para instalar las dependencias y preparar el entorno
-        // stage('Install Dependencies') {
-        //     steps {
-        //         script {
-        //             // Limpia el proyecto y construye el entorno con las dependencias necesarias
-        //             bat './gradlew clean build'
-        //         }
-        //     }
-        // }
 
+        stage('Listar Archivos') {
+            steps {
+                script {
+                    // Lista los archivos en el directorio donde se esperan las pruebas
+                    bat 'dir src/test/resources/features'
+                }
+            }
+        }
+        
         stage('Detectar Cambios en las Pruebas') {
     steps {
         script {
