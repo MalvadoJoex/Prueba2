@@ -110,7 +110,7 @@ pipeline {
                     // Ejecutar pruebas con los tags encontrados
                     if (tags) {
                         def tagList = tags.collect { it.trim() }.join(' or ') // Mantener el símbolo @
-                        sh "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
+                        bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
                     }
                 }
             }
