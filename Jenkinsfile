@@ -63,17 +63,18 @@ pipeline {
                     // Repetir la captura de archivos .feature para este contexto
                     def changedFiles = bat(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
                     featureFiles = changedFiles.findAll { it.endsWith('.feature') }
-                    
+
                     featureFiles.each { featureFile ->
+                    def fileName = new File(featureFile).getName()
                         // bat(script: "cd src/test/resources/features")
                         // def tags = bat(script: "findstr /r \"@.*\" ${featureFile}", returnStdout: true).trim().split('\n')
                         // echo "Tags encontrados en ${featureFile}: ${tags}"
                          def tags = bat(script: """
                         cd src/test/resources/features
-                        findstr /r "@.*" ${featureFile}
+                        findstr /r "@.*" ${fileName}
                     """, returnStdout: true).trim().split('\n')
 
-                    echo "Tags encontrados en ${featureFile}: ${tags}"
+                    echo "Tags encontrados en ${fileName}: ${tags}"
                         
                         // Ejecutar pruebas con los tags encontrados
                         if (tags) {
