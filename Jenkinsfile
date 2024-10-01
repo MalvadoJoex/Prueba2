@@ -130,7 +130,7 @@ pipeline {
                         def filePath = "src/test/resources/features/${file}"
                         if (fileExists(filePath)) {
                             echo "Archivo encontrado: ${filePath}"
-                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' src\\test\\resources\\features\\${file}", returnStdout: true).trim()
+                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' ${file}", returnStdout: true).trim()
                             if (tagsInFile) {
                                 echo "Tags encontrados: ${tagsInFile}"
                                 TAGS += tagsInFile + " "
