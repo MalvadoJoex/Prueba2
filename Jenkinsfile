@@ -129,7 +129,7 @@ pipeline {
                     // Filtrar los archivos de prueba modificados que contienen tags
                     changedFiles.each { file ->
                         if (file.endsWith(".feature")) {
-                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' ${file}", returnStdout: true)
+                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' src/test/resources/features/MercadoLibre.feature", returnStdout: true)
                             if (tagsInFile) {
                                 echo "Tags agregado: ${tagsInFile}"
                                 TAGS += tagsInFile + " "
