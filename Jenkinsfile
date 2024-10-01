@@ -120,7 +120,7 @@ pipeline {
 //     }
 // }
 
-stage('Extraer tags y ejecutar pruebas') {
+tage('Extraer tags y ejecutar pruebas') {
     steps {
         script {
             // Extraer los tags que comiencen con @ de los archivos modificados
@@ -139,8 +139,12 @@ stage('Extraer tags y ejecutar pruebas') {
                     // Usar findstr para extraer los tags
                     def tagsOutput = bat(script: "findstr /r \"@.*\" ${fileName}", returnStdout: true).trim()
 
-                    // Filtrar solo los tags y mantener el símbolo @
-                    def tags = tagsOutput.findAll(/@(\w+)/) // Esta expresión regular busca palabras que comienzan con @
+                    // Separar por líneas y filtrar los tags
+                    def tags = []
+                    tagsOutput.tokenize('\n').each { line ->
+                        def matchedTags = line.tokenize().findAll { it.startsWith('@') }
+                        tags.addAll(matchedTags)
+                    }
 
                     echo "Tags encontrados en ${fileName}: ${tags.join(', ')}"
 
@@ -149,7 +153,7 @@ stage('Extraer tags y ejecutar pruebas') {
                         def tagList = tags.join(' or ') // Crear una lista de tags separados por " or "
                         
                         // Cambiar al directorio raíz para ejecutar Gradle
-                        dir('../../../..') { // Regresa tres niveles a la raíz
+                        dir('../../..') { // Regresa tres niveles a la raíz
                             sh "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
                         }
                     }
