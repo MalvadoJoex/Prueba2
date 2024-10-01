@@ -105,7 +105,7 @@ pipeline {
                                 bat "type \"${file}\""
 
                                 // Extraer los tags dentro de los archivos modificados
-                                def tagsInFile = bat(script: "findstr /o \"@tag4\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
+                                def tagsInFile = bat(script: "findstr /r \'@tag[0-9]' \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
                                 echo "El tag encongtrado es: ${tagsInFile}"
                                 if (tagsInFile) {
                                     TAGS += tagsInFile + " "
