@@ -119,7 +119,7 @@ pipeline {
 //         }
 //     }
 // }
-
+//s
 stage('Extraer tags y ejecutar pruebas') {
     steps {
         script {
