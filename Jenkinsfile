@@ -120,7 +120,7 @@ pipeline {
 //     }
 // }
 
-tage('Extraer tags y ejecutar pruebas') {
+stage('Extraer tags y ejecutar pruebas') {
     steps {
         script {
             // Extraer los tags que comiencen con @ de los archivos modificados
