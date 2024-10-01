@@ -154,7 +154,8 @@ stage('Extraer tags y ejecutar pruebas') {
                         
                         // Cambiar al directorio raíz para ejecutar Gradle
                         dir('../../../..') { // Regresa tres niveles a la raíz
-                            bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
+                            //bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
+                            bat "gradle clean test ${tagList}"
                         }
                     }
                 }
