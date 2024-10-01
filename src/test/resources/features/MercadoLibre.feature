@@ -1,8 +1,8 @@
-@tag6
+@tag1
 Feature: Desafio para casa MercaadoLibre
  
 
-    @PruebaS
+    @Prueba
     Scenario: Busqueda y filtro de consola
         Given Open application to mercadolibre.com
         Then Select Mexico as a country 
