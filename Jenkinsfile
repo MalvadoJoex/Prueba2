@@ -128,7 +128,7 @@ pipeline {
                 changedFiles.each { file ->
                     if (file.endsWith(".feature")) {
                         //def filePath = "src/test/resources/features/${file}"
-                        filePath = "${file}"
+                        def filePath = "${file}"
                         if (fileExists(filePath)) {
                             echo "Archivo encontrado: ${filePath}"
                             def tagsInFile = bat(script: "findstr /r '@tag[0-9]' ${file}", returnStdout: true).trim()
