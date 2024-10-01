@@ -65,6 +65,7 @@ pipeline {
                     featureFiles = changedFiles.findAll { it.endsWith('.feature') }
                     
                     featureFiles.each { featureFile ->
+                        bat(script: "cd src/test/resources/features")
                         def tags = bat(script: "findstr /r \"@.*\" ${featureFile}", returnStdout: true).trim().split('\n')
                         echo "Tags encontrados en ${featureFile}: ${tags}"
                         
