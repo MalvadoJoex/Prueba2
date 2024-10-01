@@ -120,26 +120,30 @@ pipeline {
     //         }
     //     }
 
-    stage('Detectar Cambios en las Pruebas') {
-            steps {
-                script {
-                    // Detectar archivos modificados
-                    def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+        stage('Detectar Cambios en las Pruebas') {
+        steps {
+            script {
+                def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
-                    // Filtrar los archivos de prueba modificados que contienen tags
-                    changedFiles.each { file ->
-                        if (file.endsWith(".feature")) {
-                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' src/test/resources/features/MercadoLibre.feature", returnStdout: true)
+                changedFiles.each { file ->
+                    if (file.endsWith(".feature")) {
+                        def filePath = "src/test/resources/features/${file}"
+                        if (fileExists(filePath)) {
+                            echo "Archivo encontrado: ${filePath}"
+                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' ${filePath}", returnStdout: true).trim()
                             if (tagsInFile) {
-                                echo "Tags agregado: ${tagsInFile}"
+                                echo "Tags encontrados: ${tagsInFile}"
                                 TAGS += tagsInFile + " "
                             }
+                        } else {
+                            echo "El archivo ${filePath} no se encontró."
                         }
                     }
-                    echo "Tags a ejecutar: ${TAGS}"
                 }
+                echo "Tags a ejecutar: ${TAGS}"
             }
         }
+    }
         stage('Ejecutar Pruebas Modificadas') {
             steps {
                 script {
