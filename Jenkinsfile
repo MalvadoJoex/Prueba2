@@ -153,9 +153,9 @@ stage('Extraer tags y ejecutar pruebas') {
                         def tagList = tags.join(' or ') // Crear una lista de tags separados por " or "
                         
                         // Cambiar al directorio raíz para ejecutar Gradle
-                        dir('../../../') { // Regresa tres niveles a la raíz
-                            //bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
-                            bat "gradle clean test ${tagList}"
+                        dir('../../../..') { // Regresa tres niveles a la raíz
+                            bat "gradle clean test -Dcucumber.options=\"--tags '@${tagList}'\""
+                            //bat "gradle clean test ${tagList}"
                         }
                     }
                 }

@@ -8,12 +8,11 @@ import pages.BasePage;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-    features =  "src/test/resources/features",
+    features = "src/test/resources/features",
     glue = "steps",
-    plugin = {"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:" /*"json:cucumber-report.json"*/},
+    plugin = {"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"},
     monochrome = true
-    )
-  
+)
 public class Runner {
     @AfterClass
     public static void cleanDriver() {
