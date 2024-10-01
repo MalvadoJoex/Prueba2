@@ -125,10 +125,11 @@ pipeline {
             script {
                 def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
                 echo "Archivos modificados: ${changedFiles}"
+                changedFiles = changedFiles.replaceAll(/.*workspace.*>/, '').trim()
                 changedFiles.each { file ->
                     if (file.endsWith(".feature")) {
-                        //def filePath = "src/test/resources/features/${file}"
-                        def filePath = "${file}"
+                        def filePath = "src/test/resources/features/${file}"
+                        //ef filePath = "${file}"
                         if (fileExists(filePath)) {
                             echo "Archivo encontrado: ${filePath}"
                             def tagsInFile = bat(script: "findstr /r '@tag[0-9]' ${file}", returnStdout: true).trim()
