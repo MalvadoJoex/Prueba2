@@ -86,7 +86,41 @@ pipeline {
         //     }
         // }
 
-        stage('Extraer tags y ejecutar pruebas') {
+//         stage('Extraer tags y ejecutar pruebas') {
+//     steps {
+//         script {
+//             // Extraer los tags que comiencen con @ de los archivos modificados
+//             def featureFiles = []
+//             // Obtener archivos modificados
+//             def changedFiles = bat(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
+//             // Filtrar solo los archivos .feature
+//             featureFiles = changedFiles.findAll { it.endsWith('.feature') }
+
+//             featureFiles.each { featureFile ->
+//                 // Extraer solo el nombre del archivo
+//                 def fileName = featureFile.tokenize('/').last() // Esto toma solo el nombre del archivo
+                
+//                 // Cambiar al directorio donde se encuentran los archivos .feature
+//                 dir('src/test/resources/features') {
+//                     // Usar findstr para extraer los tags
+//                     def tags = bat(script: "findstr /r \"@.*\" ${fileName}", returnStdout: true).trim().split('\n')
+
+//                     echo "Tags encontrados en ${fileName}: ${tags.join(', ')}"
+
+//                     // Ejecutar pruebas con los tags encontrados
+//                     if (tags) {
+//                         def tagList = tags.collect { it.trim() }.join(' or ') // Mantener el símbolo @
+//                         dir('../../../..'){
+//                             bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
+stage('Extraer tags y ejecutar pruebas') {
     steps {
         script {
             // Extraer los tags que comiencen con @ de los archivos modificados
@@ -99,19 +133,24 @@ pipeline {
             featureFiles.each { featureFile ->
                 // Extraer solo el nombre del archivo
                 def fileName = featureFile.tokenize('/').last() // Esto toma solo el nombre del archivo
-                
+
                 // Cambiar al directorio donde se encuentran los archivos .feature
                 dir('src/test/resources/features') {
                     // Usar findstr para extraer los tags
-                    def tags = bat(script: "findstr /r \"@.*\" ${fileName}", returnStdout: true).trim().split('\n')
+                    def tagsOutput = bat(script: "findstr /r \"@.*\" ${fileName}", returnStdout: true).trim()
+
+                    // Filtrar solo los tags y mantener el símbolo @
+                    def tags = tagsOutput.findAll(/@(\w+)/) // Esta expresión regular busca palabras que comienzan con @
 
                     echo "Tags encontrados en ${fileName}: ${tags.join(', ')}"
 
                     // Ejecutar pruebas con los tags encontrados
                     if (tags) {
-                        def tagList = tags.collect { it.trim() }.join(' or ') // Mantener el símbolo @
-                        dir('../../../..'){
-                            bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
+                        def tagList = tags.join(' or ') // Crear una lista de tags separados por " or "
+                        
+                        // Cambiar al directorio raíz para ejecutar Gradle
+                        dir('../../../..') { // Regresa tres niveles a la raíz
+                            sh "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
                         }
                     }
                 }
