@@ -88,51 +88,70 @@ pipeline {
     //     }
     // }
 
+    // stage('Detectar Cambios en las Pruebas') {
+    //         steps {
+    //             script {
+    //                 // Cambiamos TAGS a una variable global
+    //                 TAGS = []
+    //                 // Obtén los archivos cambiados en el commit más reciente
+    //                 def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+
+    //                 // Filtra los archivos que son pruebas y que contienen tags
+    //                 changedFiles.each { file ->
+    //                     if (file.endsWith(".feature")) {
+    //                         // Verifica si el archivo existe antes de buscar etiquetas
+    //                         if (fileExists(file)) {
+    //                             // Verifica el contenido del archivo
+    //                             bat "type \"${file}\""
+
+    //                             // Extraer los tags dentro de los archivos modificados
+    //                             def tagsInFile = bat(script: "findstr /r \'@tag[0-9]' \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
+    //                             echo "El tag encongtrado es: ${tagsInFile}"
+    //                             if (tagsInFile) {
+    //                                 TAGS += tagsInFile + " "
+    //                             }
+    //                         } else {
+    //                             echo "El archivo ${file} no se encontró."
+    //                         }
+    //                     }
+    //                 }
+    //                 echo "Tags a ejecutar: ${TAGS.join(', ')}"
+    //             }
+    //         }
+    //     }
+
     stage('Detectar Cambios en las Pruebas') {
             steps {
                 script {
-                    // Cambiamos TAGS a una variable global
-                    TAGS = []
-                    // Obtén los archivos cambiados en el commit más reciente
-                    def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+                    // Detectar archivos modificados
+                    def changedFiles = sh(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
-                    // Filtra los archivos que son pruebas y que contienen tags
+                    // Filtrar los archivos de prueba modificados que contienen tags
                     changedFiles.each { file ->
                         if (file.endsWith(".feature")) {
-                            // Verifica si el archivo existe antes de buscar etiquetas
-                            if (fileExists(file)) {
-                                // Verifica el contenido del archivo
-                                bat "type \"${file}\""
-
-                                // Extraer los tags dentro de los archivos modificados
-                                def tagsInFile = bat(script: "findstr /r \'@tag[0-9]' \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
-                                echo "El tag encongtrado es: ${tagsInFile}"
-                                if (tagsInFile) {
-                                    TAGS += tagsInFile + " "
-                                }
-                            } else {
-                                echo "El archivo ${file} no se encontró."
+                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' ${file}", returnStdout: true)
+                            if (tagsInFile) {
+                                echo "Tags agregado: ${tagsInFile}"
+                                TAGS += tagsInFile + " "
                             }
                         }
                     }
-                    echo "Tags a ejecutar: ${TAGS.join(', ')}"
+                    echo "Tags a ejecutar: ${TAGS}"
                 }
             }
         }
-    
-//
-        // stage('Ejecutar Pruebas Modificadas') {
-        //     steps {
-        //         script {
-        //             if (TAGS && TAGS.trim()) {  // Verifica que TAGS no esté vacío
-        //                 // Ejecuta solo las pruebas etiquetadas que fueron modificadas
-        //                 bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
-        //             } else {
-        //                 echo "No hay pruebas modificadas para ejecutar."
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Ejecutar Pruebas Modificadas') {
+            steps {
+                script {
+                    if (TAGS && TAGS.trim()) {  // Verifica que TAGS no esté vacío
+                        // Ejecuta solo las pruebas etiquetadas que fueron modificadas
+                        bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
+                    } else {
+                        echo "No hay pruebas modificadas para ejecutar."
+                    }
+                }
+            }
+        }
 
         
         stage('Generar Reporte HTML') {
