@@ -124,7 +124,7 @@ pipeline {
             steps {
                 script {
                     // Detectar archivos modificados
-                    def changedFiles = sh(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+                    def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
                     // Filtrar los archivos de prueba modificados que contienen tags
                     changedFiles.each { file ->
