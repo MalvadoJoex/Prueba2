@@ -1,215 +1,103 @@
 pipeline {
     agent any
-
+    
     environment {
-        GRADLE_HOME = "c:/Gradle"  // Ajusta según la ruta de instalación de Gradle en tu sistema
-        PATH = "$GRADLE_HOME/bin:$PATH"
-        TAGS = ''
+        // Variables de entorno para Jira y el directorio de reportes
+        JIRA_URL = 'https://pruebasekt.atlassian.net'
+        REPORTS_DIR = "build/reports"
+        PDF_REPORT = "${REPORTS_DIR}/report.pdf"
+        HTML_REPORT = "${REPORTS_DIR}/report.html"
     }
-
+    
     stages {
-        // Stage para obtener el código desde GitHub
         stage('Checkout') {
             steps {
+                // Clonar el repositorio desde GitHub
                 git branch: 'main', url: 'https://github.com/MalvadoJoex/Prueba2.git'
             }
         }
-
-        stage('Listar Archivos') {
+        
+        stage('Detectar archivos modificados') {
             steps {
                 script {
-                    // Lista los archivos en el directorio donde se esperan las pruebas
-                    bat 'cmd /c dir src\\test\\resources\\features' 
+                    // Detectar archivos .feature modificados
+                    def changedFiles = bat(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
+                    def featureFiles = changedFiles.findAll { it.endsWith('.feature') }
+                    
+                    if (featureFiles.isEmpty()) {
+                        echo "No se encontraron archivos .feature modificados."
+                        currentBuild.result = 'SUCCESS'
+                        return
+                    }
+                    
+                    echo "Archivos .feature modificados: ${featureFiles}"
                 }
             }
         }
         
-        // stage('Detectar Cambios en las Pruebas') {
-        //     steps {
-        //         script {
-        //             TAGS = []  // Inicializar TAGS como una lista
-        //             def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
-
-        //             changedFiles.each { file ->
-        //                 if (file.endsWith(".feature")) {
-        //                     // Construir la ruta completa
-        //                     def filePath = "${env.WORKSPACE}/${file}"
-
-        //                     // Imprimir la ruta para depuración
-        //                     echo "Verificando archivo: ${filePath}"
-
-        //                     // Verifica si el archivo existe antes de buscar etiquetas
-        //                     if (fileExists(filePath)) {
-        //                         // Mostrar el contenido del archivo
-        //                         bat "type \"${filePath}\""
-
-        //                         // Extraer los tags dentro de los archivos modificados
-        //                         def tagsInFile = bat(script: "findstr /o \"@tag[0-9]\" \"${filePath}\"", returnStdout: true).trim()
-        //                         if (tagsInFile) {
-        //                             TAGS += tagsInFile + " "
-        //                         }
-        //                     } else {
-        //                         echo "El archivo ${filePath} no se encontró."
-        //                     }
-        //                 }
-        //             }
-        //             echo "Tags a ejecutar: ${TAGS.join(', ')}"
-        //         }
-        //     }
-        // }
-///
-    //         stage('Detectar Cambios en las Pruebas') {
-    //     steps {
-    //         script {
-    //             eTAGS = []
-    //             // Obtén los archivos cambiados en el commit más reciente
-    //             def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
-
-    //             // Filtra los archivos queson pruebas y que contienen tags
-    //             changedFiles.each { file ->
-    //                 if (file.endsWith(".feature")) {
-    //                     // Verifica si el archivo existe antes de buscar etiquetas
-    //                     if (fileExists(file)) {
-    //                         // Verifica el contenido del archivo
-    //                         bat "type \"${file}\""
-
-    //                         // Extraer los tags dentro de los archivos modificados
-    //                         def tagsInFile = bat(script: "findstr /o \"@tag6\" \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
-    //                         if (tagsInFile) {
-    //                             TAGS += tagsInFile + " "
-    //                         }
-    //                     } else {
-    //                         echo "El archivo ${file} no se encontró."
-    //                     }
-    //                 }
-    //             }
-    //             echo "Tags a ejecutar: ${TAGS.join(', ')}"
-    //         }
-    //     }
-    // }
-
-    // stage('Detectar Cambios en las Pruebas') {
-    //         steps {
-    //             script {
-    //                 // Cambiamos TAGS a una variable global
-    //                 TAGS = []
-    //                 // Obtén los archivos cambiados en el commit más reciente
-    //                 def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
-
-    //                 // Filtra los archivos que son pruebas y que contienen tags
-    //                 changedFiles.each { file ->
-    //                     if (file.endsWith(".feature")) {
-    //                         // Verifica si el archivo existe antes de buscar etiquetas
-    //                         if (fileExists(file)) {
-    //                             // Verifica el contenido del archivo
-    //                             bat "type \"${file}\""
-
-    //                             // Extraer los tags dentro de los archivos modificados
-    //                             def tagsInFile = bat(script: "findstr /r \'@tag[0-9]' \"${env.WORKSPACE}/${file}\"", returnStdout: true).trim()
-    //                             echo "El tag encongtrado es: ${tagsInFile}"
-    //                             if (tagsInFile) {
-    //                                 TAGS += tagsInFile + " "
-    //                             }
-    //                         } else {
-    //                             echo "El archivo ${file} no se encontró."
-    //                         }
-    //                     }
-    //                 }
-    //                 echo "Tags a ejecutar: ${TAGS.join(', ')}"
-    //             }
-    //         }
-    //     }
-
-        stage('Detectar Cambios en las Pruebas') {
-        steps {
-            script {
-                def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
-                echo "Archivos modificados: ${changedFiles}"
-                changedFiles = changedFiles.replaceAll(/.*workspace.*>/, '').trim()
-                changedFiles.each { file ->
-                    if (file.endsWith(".feature")) {
-                        def filePath = "src/test/resources/features/${file}"
-                        //ef filePath = "${file}"
-                        if (fileExists(filePath)) {
-                            echo "Archivo encontrado: ${filePath}"
-                            def tagsInFile = bat(script: "findstr /r '@tag[0-9]' ${file}", returnStdout: true).trim()
-                            if (tagsInFile) {
-                                echo "Tags encontrados: ${tagsInFile}"
-                                TAGS += tagsInFile + " "
-                            }
-                        } else {
-                            echo "El archivo ${filePath} no se encontró."
+        stage('Extraer tags y ejecutar pruebas') {
+            steps {
+                script {
+                    // Extraer los tags que comiencen con @ de los archivos modificados
+                    featureFiles.each { featureFile ->
+                        def tags = bat(script: "findstr /r '@[^ ]*' ${featureFile}", returnStdout: true).trim().split('\n')
+                        echo "Tags encontrados en ${featureFile}: ${tags}"
+                        
+                        // Ejecutar pruebas con los tags encontrados
+                        if (tags) {
+                            def tagList = tags.join(' or ')
+                            bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
                         }
                     }
                 }
-                echo "Tags a ejecutar: ${TAGS}"
             }
         }
-    }
-        stage('Ejecutar Pruebas Modificadas') {
+        
+        stage('Generar reportes') {
             steps {
                 script {
-                    if (TAGS && TAGS.trim()) {  // Verifica que TAGS no esté vacío
-                        // Ejecuta solo las pruebas etiquetadas que fueron modificadas
-                        bat "mvn test -Dcucumber.filter.tags='${TAGS}'"
+                    // Generar los reportes en PDF y HTML
+                    echo "Generando reportes HTML y PDF..."
+                    bat "gradle generateReport"
+                    
+                    // Archivar los reportes
+                    archiveArtifacts artifacts: "${HTML_REPORT}, ${PDF_REPORT}", allowEmptyArchive: false
+                }
+            }
+        }
+        
+        stage('Crear caso en Jira') {
+            steps {
+                script {
+                    // Crear un nuevo caso en Jira
+                    jiraNewIssue site: 'JiraSite', projectKey: 'PRUEB', issueType: 'Bug', summary: 'Resultados de pruebas automatizadas', description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.', priority: 'Major'
+                    
+                    // Adjuntar los reportes en HTML y PDF
+                    jiraAttachFiles idOrKey: jiraIssueKey, files: [HTML_REPORT, PDF_REPORT]
+                }
+            }
+        }
+        
+        stage('Actualizar estado de Jira') {
+            steps {
+                script {
+                    def testResult = currentBuild.result ?: 'SUCCESS'
+                    
+                    // Actualizar el estado en Jira dependiendo del resultado
+                    if (testResult == 'SUCCESS') {
+                        jiraTransitionIssue idOrKey: jiraIssueKey, transitionName: 'Done'
                     } else {
-                        echo "No hay pruebas modificadas para ejecutar."
+                        jiraTransitionIssue idOrKey: jiraIssueKey, transitionName: 'Reopen'
                     }
                 }
             }
         }
-
-        
-        stage('Generar Reporte HTML') {
-            steps {
-                // Genera el reporte HTML de las pruebas ejecutadas
-                archiveArtifacts allowEmptyArchive: true, artifacts: '**/target/*.html'
-            }
-        }
     }
-
+    
     post {
-        success {
-            script {
-                // Subir el reporte y actualizar el estado en Jira
-                bat """
-                curl -D- -u joejobatua9000@gmail.com:ATATT3xFfGF0C97uY4I3i9GwuAZf_inuq7DKQZY9KAeZQjy07D7ibatGxJ5TCKgjD6pEjAr7UQIsYTueQNR4djp0oQrVM2aD7DN2hzvbXRM_pKAmWw2cQKS9hVhxfFyCX7UyQB6ssGuERwrPnfRLkEPJv9Mymrdstm_4ta66kDa0sdS_o4YyULEQ=899ED88F -X POST -H "Content-Type: application/json" \
-                -d '{"transition": {"id": "31"}}' \
-https://pruebasekt.atlassian.net/rest/api/2/issue/${env.JIRA_TICKET}/transitions
-                """
-            }
-        }
-        failure {
-            script {
-                // Crear un caso en Jira para los errores
-                def response = bat(script: """
-                curl -D- -u joejobatua9000@gmail.com:ATATT3xFfGF0C97uY4I3i9GwuAZf_inuq7DKQZY9KAeZQjy07D7ibatGxJ5TCKgjD6pEjAr7UQIsYTueQNR4djp0oQrVM2aD7DN2hzvbXRM_pKAmWw2cQKS9hVhxfFyCX7UyQB6ssGuERwrPnfRLkEPJv9Mymrdstm_4ta66kDa0sdS_o4YyULEQ=899ED88F -X POST -H "Content-Type: application/json" \
-                -d '{
-                    "fields": {
-                        "project": {
-                            "key": "PROYECTO"
-                        },
-                        "summary": "Falla en pruebas automatizadas: ${TAGS}",
-                        "description": "Las pruebas asociadas con los tags ${TAGS} han fallado.",
-                        "issuetype": {
-                            "name": "Bug"
-                        }
-                    }
-                }'
-https://pruebasekt.atlassian.net/rest/api/2/issue/
-                """, returnStdout: true)
-                // Subir el reporte HTML al ticket de Jira
-                def issueKey = (response =~ /"key":"(.*?)"/)[0][1]
-                echo "Ticket creado en Jira: ${issueKey}"
-                bat """
-                curl -D- -u joejobatua9000@gmail.com:ATATT3xFfGF0C97uY4I3i9GwuAZf_inuq7DKQZY9KAeZQjy07D7ibatGxJ5TCKgjD6pEjAr7UQIsYTueQNR4djp0oQrVM2aD7DN2hzvbXRM_pKAmWw2cQKS9hVhxfFyCX7UyQB6ssGuERwrPnfRLkEPJv9Mymrdstm_4ta66kDa0sdS_o4YyULEQ=899ED88F -X POST -H "X-Atlassian-Token: no-check" \
-                -F "file=@target/reporte.html" \
-                -F "name=reporte.html" \
-                -F "description=Reporte de pruebas fallidas" \
-https://pruebasekt.atlassian.net/rest/api/2/issue/${issueKey}/attachments
-                """
-            }
+        always {
+            // Limpiar workspace
+            cleanWs()
         }
     }
 }
-        
