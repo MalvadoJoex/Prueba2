@@ -39,6 +39,18 @@ dependencies {
     implementation group: 'io.appium', name: 'java-client', version: '9.2.2'
 }
 
+// Tarea para generar reportes
+task generateReport(type: Copy) {
+    // Define cómo generar el reporte aquí, puede variar según tu configuración
+    from("$buildDir/reports/tests/test") {
+        include '**/*.html' // Ajusta según tus archivos de reporte generados
+    }
+    into("$buildDir/reports/generated") // Directorio donde se generarán los reportes
+}
+
+// Esta tarea se ejecuta después de que las pruebas se hayan completado
+test.finalizedBy generateReport
+
 test{
     useJUnitPlatform()
     systemProperty "cucumber.options", System.getProperty("cucumber.options")
