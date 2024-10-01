@@ -20,9 +20,10 @@ pipeline {
         stage('Detectar archivos modificados') {
             steps {
                 script {
+                    def featureFiles = []
                     // Detectar archivos .feature modificados
                     def changedFiles = bat(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
-                    def featureFiles = changedFiles.findAll { it.endsWith('.feature') }
+                    featureFiles = changedFiles.findAll { it.endsWith('.feature') }
                     
                     if (featureFiles.isEmpty()) {
                         echo "No se encontraron archivos .feature modificados."
@@ -35,10 +36,34 @@ pipeline {
             }
         }
         
+        // stage('Extraer tags y ejecutar pruebas') {
+        //     steps {
+        //         script {
+        //             // Extraer los tags que comiencen con @ de los archivos modificados
+        //              def featureFiles = []
+        //             featureFiles.each { featureFile ->
+        //                 def tags = bat(script: "findstr /r '@[^ ]*' ${featureFile}", returnStdout: true).trim().split('\n')
+        //                 echo "Tags encontrados en ${featureFile}: ${tags}"
+                        
+        //                 // Ejecutar pruebas con los tags encontrados
+        //                 if (tags) {
+        //                     def tagList = tags.join(' or ')
+        //                     bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
         stage('Extraer tags y ejecutar pruebas') {
             steps {
                 script {
                     // Extraer los tags que comiencen con @ de los archivos modificados
+                    def featureFiles = []
+                    // Repetir la captura de archivos .feature para este contexto
+                    def changedFiles = bat(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
+                    featureFiles = changedFiles.findAll { it.endsWith('.feature') }
+                    
                     featureFiles.each { featureFile ->
                         def tags = bat(script: "findstr /r '@[^ ]*' ${featureFile}", returnStdout: true).trim().split('\n')
                         echo "Tags encontrados en ${featureFile}: ${tags}"
@@ -46,7 +71,7 @@ pipeline {
                         // Ejecutar pruebas con los tags encontrados
                         if (tags) {
                             def tagList = tags.join(' or ')
-                            bat "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
+                            sh "gradle clean test -Dcucumber.options='--tags \"${tagList}\"'"
                         }
                     }
                 }
