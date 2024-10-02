@@ -89,11 +89,12 @@ stage('Generar reportes') {
 
             // Listar los archivos en el directorio ExtentReports y obtener la ruta del HTML generado
             def output = bat(script: 'for /r ExtentReports %%i in (*.html) do @echo %%i', returnStdout: true).trim()
-            echo "Archivos generados: ${output}"
+            echo "Archivos generados:\n${output}"
 
-            // Si se encontró el archivo HTML
-            if (output) {
-                def htmlReportPath = output.split("\r\n")[0] // Asumimos que el primer archivo es el correcto
+            // Filtrar las líneas que contienen las rutas de los archivos
+            def reportPaths = output.split("\r\n").findAll { it.endsWith(".html") }
+            if (reportPaths.size() > 0) {
+                def htmlReportPath = reportPaths[0] // Tomar el primer archivo .html encontrado
                 echo "Archivo HTML encontrado: ${htmlReportPath}"
                 archiveArtifacts artifacts: htmlReportPath, allowEmptyArchive: false
             } else {
@@ -102,10 +103,11 @@ stage('Generar reportes') {
 
             // Repetir para PDF si es necesario
             def pdfOutput = bat(script: 'for /r ExtentReports %%i in (*.pdf) do @echo %%i', returnStdout: true).trim()
-            echo "Archivos PDF generados: ${pdfOutput}"
+            echo "Archivos PDF generados:\n${pdfOutput}"
 
-            if (pdfOutput) {
-                def pdfReportPath = pdfOutput.split("\r\n")[0]
+            def pdfReportPaths = pdfOutput.split("\r\n").findAll { it.endsWith(".pdf") }
+            if (pdfReportPaths.size() > 0) {
+                def pdfReportPath = pdfReportPaths[0]
                 echo "Archivo PDF encontrado: ${pdfReportPath}"
                 archiveArtifacts artifacts: pdfReportPath, allowEmptyArchive: false
             } else {
