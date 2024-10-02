@@ -300,8 +300,6 @@ stage('Generar reportes') {
                 }
             }
         }
-    }
-}
 
         stage('Actualizar estado de Jira') {
             steps {
