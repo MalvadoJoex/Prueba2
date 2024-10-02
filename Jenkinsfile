@@ -80,6 +80,43 @@ stage('Extraer tags y ejecutar pruebas') {
     }
 }
         
+// stage('Generar reportes') {
+//     steps {
+//         script {
+//             // Generar los reportes en PDF y HTML
+//             echo "Generando reportes HTML y PDF..."
+//             bat "gradle generateReport"
+
+//             // Listar los archivos en el directorio ExtentReports y obtener la ruta del HTML generado
+//             def output = bat(script: 'for /r ExtentReports %%i in (*.html) do @echo %%i', returnStdout: true).trim()
+//             echo "Archivos generados:\n${output}"
+
+//             // Filtrar las líneas que contienen las rutas de los archivos
+//             def reportPaths = output.split("\r\n").findAll { it.endsWith(".html") }
+//             if (reportPaths.size() > 0) {
+//                 def htmlReportPath = reportPaths[0] // Tomar el primer archivo .html encontrado
+//                 echo "Archivo HTML encontrado: ${htmlReportPath}"
+//                 archiveArtifacts artifacts: htmlReportPath, allowEmptyArchive: false
+//             } else {
+//                 echo "No se encontró archivo HTML."
+//             }
+
+//             // Repetir para PDF si es necesario
+//             def pdfOutput = bat(script: 'for /r ExtentReports %%i in (*.pdf) do @echo %%i', returnStdout: true).trim()
+//             echo "Archivos PDF generados:\n${pdfOutput}"
+
+//             def pdfReportPaths = pdfOutput.split("\r\n").findAll { it.endsWith(".pdf") }
+//             if (pdfReportPaths.size() > 0) {
+//                 def pdfReportPath = pdfReportPaths[0]
+//                 echo "Archivo PDF encontrado: ${pdfReportPath}"
+//                 archiveArtifacts artifacts: pdfReportPath, allowEmptyArchive: false
+//             } else {
+//                 echo "No se encontró archivo PDF."
+//             }
+//         }
+//     }
+// }
+
 stage('Generar reportes') {
     steps {
         script {
@@ -94,9 +131,10 @@ stage('Generar reportes') {
             // Filtrar las líneas que contienen las rutas de los archivos
             def reportPaths = output.split("\r\n").findAll { it.endsWith(".html") }
             if (reportPaths.size() > 0) {
-                def htmlReportPath = reportPaths[0] // Tomar el primer archivo .html encontrado
-                echo "Archivo HTML encontrado: ${htmlReportPath}"
-                archiveArtifacts artifacts: htmlReportPath, allowEmptyArchive: false
+                // Usar rutas relativas
+                def relativeHtmlReportPath = reportPaths[0].replace("C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\github-webhook\\", "")
+                echo "Archivo HTML encontrado: ${relativeHtmlReportPath}"
+                archiveArtifacts artifacts: relativeHtmlReportPath, allowEmptyArchive: false
             } else {
                 echo "No se encontró archivo HTML."
             }
@@ -107,9 +145,9 @@ stage('Generar reportes') {
 
             def pdfReportPaths = pdfOutput.split("\r\n").findAll { it.endsWith(".pdf") }
             if (pdfReportPaths.size() > 0) {
-                def pdfReportPath = pdfReportPaths[0]
-                echo "Archivo PDF encontrado: ${pdfReportPath}"
-                archiveArtifacts artifacts: pdfReportPath, allowEmptyArchive: false
+                def relativePdfReportPath = pdfReportPaths[0].replace("C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\github-webhook\\", "")
+                echo "Archivo PDF encontrado: ${relativePdfReportPath}"
+                archiveArtifacts artifacts: relativePdfReportPath, allowEmptyArchive: false
             } else {
                 echo "No se encontró archivo PDF."
             }
