@@ -88,6 +88,7 @@ dependencies {
 
     // Cucumber
     implementation group: 'io.cucumber', name: 'cucumber-java', version: '7.14.0'
+    testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '7.14.0' // Cambiado a cucumber-junit
     testImplementation group: 'io.cucumber', name: 'cucumber-junit-platform-engine', version: '7.14.0'
     implementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.5.3'
 
