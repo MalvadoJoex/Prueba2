@@ -4,6 +4,7 @@ pipeline {
     environment {
         // Variables de entorno para Jira y el directorio de reportes
         JIRA_URL = 'https://pruebasekt.atlassian.net'
+        jiraSite = 'pruebasekt'
         REPORTS_DIR = "build/reports"
         PDF_REPORT = "${REPORTS_DIR}/report.pdf"
         HTML_REPORT = "${REPORTS_DIR}/report.html"
@@ -155,18 +156,54 @@ stage('Generar reportes') {
     }
 }
         
-        stage('Crear caso en Jira') {
+    //     stage('Crear caso en Jira') {
+    //         steps {
+    //             script {
+    //                 // Crear un nuevo caso en Jira
+    //                 jiraNewIssue site: 'pruebasekt', projectKey: 'PRUEB', issueType: 'Test', summary: 'Resultados de pruebas automatizadas', description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.', priority: 'Major'
+                    
+    //                 // Adjuntar los reportes en HTML y PDF
+    //                 jiraAttachFiles idOrKey: jiraIssueKey, files: [HTML_REPORT, PDF_REPORT]
+    //             }
+    //         }
+    //     }
+        
+    //     stage('Actualizar estado de Jira') {
+    //         steps {
+    //             script {
+    //                 def testResult = currentBuild.result ?: 'SUCCESS'
+                    
+    //                 // Actualizar el estado en Jira dependiendo del resultado
+    //                 if (testResult == 'SUCCESS') {
+    //                     jiraTransitionIssue idOrKey: jiraIssueKey, transitionName: 'Done'
+    //                 } else {
+    //                     jiraTransitionIssue idOrKey: jiraIssueKey, transitionName: 'Reopen'
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    stage('Crear caso en Jira') {
             steps {
                 script {
                     // Crear un nuevo caso en Jira
-                    jiraNewIssue site: 'pruebasekt', projectKey: 'PRUEB', issueType: 'Test', summary: 'Resultados de pruebas automatizadas', description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.', priority: 'Major'
+                    def issue = jiraNewIssue site: jiraSite, 
+                                            projectKey: 'PRUEB', 
+                                            issueType: 'Test', 
+                                            summary: 'Resultados de pruebas automatizadas', 
+                                            description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.', 
+                                            priority: 'Major'
                     
+                    // Guardar el ID del issue creado
+                    def jiraIssueKey = issue.data.key
+
                     // Adjuntar los reportes en HTML y PDF
                     jiraAttachFiles idOrKey: jiraIssueKey, files: [HTML_REPORT, PDF_REPORT]
                 }
             }
         }
-        
+
         stage('Actualizar estado de Jira') {
             steps {
                 script {
