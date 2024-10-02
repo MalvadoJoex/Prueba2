@@ -229,8 +229,8 @@ stage('Generar reportes') {
                             project: [key: 'TESTEAME'], // Usa el clave del proyecto
                             summary: 'Resultados de pruebas automatizadas',
                             description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
-                            issuetype: [name: 'Test'], // Asegúrate de que este tipo de issue existe
-                            priority: [name: 'High'] // Asegúrate de que esta prioridad existe
+                            issuetype: [name: 'Test']//, // Asegúrate de que este tipo de issue existe
+                            //priority: [name: 'High'] // Asegúrate de que esta prioridad existe
                         ]
                     ]
 
