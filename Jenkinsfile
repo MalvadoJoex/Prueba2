@@ -410,67 +410,7 @@ stage('Generar reportes') {
     //         }
     //     }
 
-//     stage('Crear caso en Jira') {
-//     steps {
-//         script {
-//             // Datos para crear el issue en Jira
-//             def jiraIssueInput = [
-//                 fields: [
-//                     project: [ key: 'TESTEAME' ],
-//                     summary: 'Resultados de pruebas automatizadas',
-//                     description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
-//                     issuetype: [ name: 'Bug' ]
-//                 ]
-//             ]
-
-//             // Creación del issue en Jira
-//             def response = jiraNewIssue issue: jiraIssueInput, site: 'PruebaEmpresa'
-//             echo "Jira issue response: ${response}"
-
-//             // Verificación del issueKey
-//             def issueKey = response?.data?.key
-//             if (!issueKey) {
-//                 error "No se pudo obtener el issueKey de la respuesta de Jira"
-//             } else {
-//                 echo "IssueKey obtenido: ${issueKey}"
-//             }
-
-//             // Rutas de los archivos de reportes
-//             // def attachFilePathHtml = 'ruta/del/reporte/ExtentHtml.html'
-//             // def attachFilePathPdf = 'ruta/del/reporte/ExtentHtml.pdf'
-//             def attachFilePathHtml = 'ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html'
-//             def attachFilePathPdf = 'ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf'
-
-            
-
-//             // Verificación de archivos usando comandos de shell de Windows
-//             bat """
-//                 IF NOT EXIST ${attachFilePathHtml} (
-//                     echo "Archivo HTML no encontrado en ${attachFilePathHtml}"
-//                     exit /B 1
-//                 )
-//                 IF NOT EXIST ${attachFilePathPdf} (
-//                     echo "Archivo PDF no encontrado en ${attachFilePathPdf}"
-//                     exit /B 1
-//                 )
-//             """
-
-//             // Adjuntar los archivos en Jira
-//             try {
-//                 def attachHtmlResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: attachFilePathHtml
-//                 echo "Archivo HTML adjuntado: ${attachHtmlResponse}"
-
-//                 def attachPdfResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: attachFilePathPdf
-//                 echo "Archivo PDF adjuntado: ${attachPdfResponse}"
-
-//             } catch (Exception e) {
-//                 error "Error adjuntando archivos: ${e.message}"
-//             }
-//         }
-//     }
-// }
-
-stage('Crear caso en Jira') {
+    stage('Crear caso en Jira') {
     steps {
         script {
             // Datos para crear el issue en Jira
@@ -495,29 +435,24 @@ stage('Crear caso en Jira') {
                 echo "IssueKey obtenido: ${issueKey}"
             }
 
-            // Listar archivos en el directorio de reportes
-            // bat 'dir ExtentReports/SparkReport_*'
+            // Rutas de los archivos de reportes
+            // def attachFilePathHtml = 'ruta/del/reporte/ExtentHtml.html'
+            // def attachFilePathPdf = 'ruta/del/reporte/ExtentHtml.pdf'
+            def attachFilePathHtml = 'ExtentReports/SparkReport_ 1_oct_24 15_00_13/HtmlReport/ExtentHtml.html'
+            def attachFilePathPdf = 'ExtentReports/SparkReport_ 1_oct_24 15_00_13/PdfReport/ExtentPdf.pdf'
+
+            
 
             // Verificación de archivos usando comandos de shell de Windows
             bat """
-                for /f "delims=" %%F in ('dir /b ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html') do (
-                    set "attachFilePathHtml=%%F"
-                    goto :htmlfound
+                IF NOT EXIST ${attachFilePathHtml} (
+                    echo "Archivo HTML no encontrado en ${attachFilePathHtml}"
+                    exit /B 1
                 )
-                echo "Archivo HTML no encontrado"
-                exit /B 1
-                :htmlfound
-                
-                for /f "delims=" %%F in ('dir /b ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf') do (
-                    set "attachFilePathPdf=%%F"
-                    goto :pdffound
+                IF NOT EXIST ${attachFilePathPdf} (
+                    echo "Archivo PDF no encontrado en ${attachFilePathPdf}"
+                    exit /B 1
                 )
-                echo "Archivo PDF no encontrado"
-                exit /B 1
-                :pdffound
-
-                echo "Archivo HTML encontrado: !attachFilePathHtml!"
-                echo "Archivo PDF encontrado: !attachFilePathPdf!"
             """
 
             // Adjuntar los archivos en Jira
@@ -534,6 +469,71 @@ stage('Crear caso en Jira') {
         }
     }
 }
+
+// stage('Crear caso en Jira') {
+//     steps {
+//         script {
+//             // Datos para crear el issue en Jira
+//             def jiraIssueInput = [
+//                 fields: [
+//                     project: [ key: 'TESTEAME' ],
+//                     summary: 'Resultados de pruebas automatizadas',
+//                     description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
+//                     issuetype: [ name: 'Bug' ]
+//                 ]
+//             ]
+
+//             // Creación del issue en Jira
+//             def response = jiraNewIssue issue: jiraIssueInput, site: 'PruebaEmpresa'
+//             echo "Jira issue response: ${response}"
+
+//             // Verificación del issueKey
+//             def issueKey = response?.data?.key
+//             if (!issueKey) {
+//                 error "No se pudo obtener el issueKey de la respuesta de Jira"
+//             } else {
+//                 echo "IssueKey obtenido: ${issueKey}"
+//             }
+
+//             // Listar archivos en el directorio de reportes
+//             // bat 'dir ExtentReports/SparkReport_*'
+
+//             // Verificación de archivos usando comandos de shell de Windows
+//             bat """
+//                 for /f "delims=" %%F in ('dir /b ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html') do (
+//                     set "attachFilePathHtml=%%F"
+//                     goto :htmlfound
+//                 )
+//                 echo "Archivo HTML no encontrado"
+//                 exit /B 1
+//                 :htmlfound
+                
+//                 for /f "delims=" %%F in ('dir /b ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf') do (
+//                     set "attachFilePathPdf=%%F"
+//                     goto :pdffound
+//                 )
+//                 echo "Archivo PDF no encontrado"
+//                 exit /B 1
+//                 :pdffound
+
+//                 echo "Archivo HTML encontrado: !attachFilePathHtml!"
+//                 echo "Archivo PDF encontrado: !attachFilePathPdf!"
+//             """
+
+//             // Adjuntar los archivos en Jira
+//             try {
+//                 def attachHtmlResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: attachFilePathHtml
+//                 echo "Archivo HTML adjuntado: ${attachHtmlResponse}"
+
+//                 def attachPdfResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: attachFilePathPdf
+//                 echo "Archivo PDF adjuntado: ${attachPdfResponse}"
+
+//             } catch (Exception e) {
+//                 error "Error adjuntando archivos: ${e.message}"
+//             }
+//         }
+//     }
+// }
 
 
         stage('Actualizar estado de Jira') {
