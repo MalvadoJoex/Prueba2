@@ -88,7 +88,7 @@ stage('Generar reportes') {
             bat "gradle generateReport"
 
             // Listar los archivos en el directorio ExtentReports y obtener la ruta del HTML generado
-            def output = bat(script: 'for /r ExtentReports %i in (*.html) do @echo %i', returnStdout: true).trim()
+            def output = bat(script: 'for /r ExtentReports %%i in (*.html) do @echo %%i', returnStdout: true).trim()
             echo "Archivos generados: ${output}"
 
             // Si se encontró el archivo HTML
@@ -101,7 +101,7 @@ stage('Generar reportes') {
             }
 
             // Repetir para PDF si es necesario
-            def pdfOutput = bat(script: 'for /r ExtentReports %i in (*.pdf) do @echo %i', returnStdout: true).trim()
+            def pdfOutput = bat(script: 'for /r ExtentReports %%i in (*.pdf) do @echo %%i', returnStdout: true).trim()
             echo "Archivos PDF generados: ${pdfOutput}"
 
             if (pdfOutput) {
