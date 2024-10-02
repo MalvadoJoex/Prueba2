@@ -558,6 +558,7 @@ stage('Generar reportes') {
         always {
             // Limpiar workspace
             //cleanWs()
+            echo 'No se limpia el workspace.'
         }
     }
 }
