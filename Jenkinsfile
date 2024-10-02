@@ -52,7 +52,7 @@ stage('Extraer tags y ejecutar pruebas') {
                 def fileName = featureFile.tokenize('/').last() // Esto toma solo el nombre del archivo
 
                 // Cambiar al directorio donde se encuentran los archivos .feature
-                dir('src/test/resources/features') {
+                dir('src/test/resources') {
                     // Usar findstr para extraer los tags
                     def tagsOutput = bat(script: "findstr /r \"@.*\" ${fileName}", returnStdout: true).trim()
 
