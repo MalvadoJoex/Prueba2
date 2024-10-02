@@ -557,7 +557,7 @@ stage('Generar reportes') {
     post {
         always {
             // Limpiar workspace
-            cleanWs()
+            //cleanWs()
         }
     }
 }

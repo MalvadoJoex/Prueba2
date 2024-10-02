@@ -75,7 +75,8 @@ def dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
 def timestamp = dateFormat.format(new Date())
 
 // Define la ruta base para los reportes
-def reportsBaseDir = "$buildDir/ExtentReports/SparkReport_${timestamp}"
+//def reportsBaseDir = "$buildDir/ExtentReports/SparkReport_${timestamp}"
+def reportsBaseDir = "$buildDir/Reportes/"
 
 repositories {
     mavenCentral()
