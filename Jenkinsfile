@@ -436,8 +436,12 @@ stage('Generar reportes') {
             }
 
             // Rutas de los archivos de reportes
-            def attachFilePathHtml = 'ruta/del/reporte/ExtentHtml.html'
-            def attachFilePathPdf = 'ruta/del/reporte/ExtentHtml.pdf'
+            // def attachFilePathHtml = 'ruta/del/reporte/ExtentHtml.html'
+            // def attachFilePathPdf = 'ruta/del/reporte/ExtentHtml.pdf'
+            def attachFilePathHtml = 'ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html'
+            def attachFilePathPdf = 'ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf'
+
+            
 
             // Verificación de archivos usando comandos de shell de Windows
             bat """
