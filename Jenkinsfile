@@ -384,7 +384,7 @@ stage('Generar reportes') {
                     def attachFilePathPdf = 'ruta/del/reporte/ExtentHtml.pdf'
 
                     // Verificación de archivos usando comandos de shell
-                    sh """
+                    bat """
                         if [ ! -f ${attachFilePathHtml} ]; then
                             echo "Archivo HTML no encontrado en ${attachFilePathHtml}"
                             exit 1
