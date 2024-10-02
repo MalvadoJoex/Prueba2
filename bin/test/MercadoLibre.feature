@@ -1,8 +1,8 @@
-@Vam3443213126321
+@Vam344321312632
 Feature: Desafio para casa MercaadoLibre
  
 
-    @Preradf2
+    @Preradf
     Scenario: Busqueda y filtro de consola
         Given Open application to mercadolibre.com
         Then Select Mexico as a country 
