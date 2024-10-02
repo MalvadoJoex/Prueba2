@@ -223,18 +223,24 @@ stage('Generar reportes') {
      stage('Crear caso en Jira') {
             steps {
                 script {
-                    def issue = jiraNewIssue site: jiraSite, 
-                                             input: [
-                                                 fields: [
-                                                     project: [key: 'PRUEB'],
-                                                     summary: 'Resultados de pruebas automatizadas',
-                                                     description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
-                                                     issuetype: [name: 'Test'],
-                                                     priority: [name: 'Major']
-                                                 ]
-                                             ]
-                    
-                    def jiraIssueKey = issue.data.key
+                    // Definir el nuevo caso a crear en Jira
+                    def testIssue = [
+                        fields: [
+                            project: [key: 'PRUEB'], // Usa el clave del proyecto
+                            summary: 'Resultados de pruebas automatizadas',
+                            description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
+                            issuetype: [name: 'Test'], // Asegúrate de que este tipo de issue existe
+                            priority: [name: 'High'] // Asegúrate de que esta prioridad existe
+                        ]
+                    ]
+
+                    // Crear un nuevo caso en Jira
+                    def testIssues = [issueUpdates: [testIssue]]
+                    def response = jiraNewIssues issues: testIssues, site: jiraSite
+
+                    // Comprobar el éxito de la creación
+                    echo response.successful.toString()
+                    def jiraIssueKey = response.data[0].key // Obtén la clave del issue creado
 
                     // Adjuntar los reportes en HTML y PDF
                     jiraAttachFiles idOrKey: jiraIssueKey, files: [HTML_REPORT, PDF_REPORT]
@@ -251,7 +257,7 @@ stage('Generar reportes') {
                     if (testResult == 'SUCCESS') {
                         jiraTransitionIssue idOrKey: jiraIssueKey, transitionName: 'Done'
                     } else {
-                        jiraTransitionIssue idOrKey: jiraIssueKey, transitionName: 'Reopen'
+                        jiraTransitionIssue idOrKey: jiraIssueKey, transitionName: 'In Progress'
                     }
                 }
             }
