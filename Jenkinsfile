@@ -226,7 +226,7 @@ stage('Generar reportes') {
                     // Definir el nuevo caso a crear en Jira
                     def testIssue = [
                         fields: [
-                            project: [key: 'PRUEB'], // Usa el clave del proyecto
+                            project: [key: 'TESTEAME'], // Usa el clave del proyecto
                             summary: 'Resultados de pruebas automatizadas',
                             description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
                             issuetype: [name: 'Test'], // Asegúrate de que este tipo de issue existe
