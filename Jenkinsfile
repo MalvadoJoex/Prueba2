@@ -5,9 +5,9 @@ pipeline {
         // Variables de entorno para Jira y el directorio de reportes
         JIRA_URL = 'https://pruebasekt.atlassian.net'
         jiraSite = 'PruebaEmpresa'
-        REPORTS_DIR = "build/reports"
-        PDF_REPORT = "${REPORTS_DIR}/report.pdf"
-        HTML_REPORT = "${REPORTS_DIR}/report.html"
+        REPORTS_DIR = "ExtentReports/SparkReport_*/"
+        PDF_REPORT = "${REPORTS_DIR}/HtmlReport/ExtentHtml.html"
+        HTML_REPORT = "${REPORTS_DIR}/PdfReport/ExtentPdf.pdf"
     }
     
     stages {
@@ -220,33 +220,88 @@ stage('Generar reportes') {
     //     }
     // }
 
-     stage('Crear caso en Jira') {
+    //  stage('Crear caso en Jira') {
+    //         steps {
+    //             script {
+    //                 // Definir el nuevo caso a crear en Jira
+    //                 def testIssue = [
+    //                     fields: [
+    //                         project: [key: 'TESTEAME'], // Usa el clave del proyecto
+    //                         summary: 'Resultados de pruebas automatizadas',
+    //                         description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
+    //                         issuetype: [name: 'Bug']//, // Asegúrate de que este tipo de issue existe
+    //                         //priority: [name: 'High'] // Asegúrate de que esta prioridad existe
+    //                     ]
+    //                 ]
+
+    //                 // Crear un nuevo caso en Jira
+    //                 def testIssues = [issueUpdates: [testIssue]]
+    //                 def response = jiraNewIssues issues: testIssues, site: jiraSite
+
+    //                 // Comprobar el éxito de la creación
+    //                 echo response.successful.toString()
+    //                 def jiraIssueKey = response.data[0].key // Obtén la clave del issue creado
+
+    //                 // Adjuntar los reportes en HTML y PDF
+    //                 jiraAttachFiles idOrKey: jiraIssueKey, files: [HTML_REPORT, PDF_REPORT]
+    //             }
+    //         }
+    //     }
+
+    stage('Crear caso en Jira') {
             steps {
                 script {
-                    // Definir el nuevo caso a crear en Jira
-                    def testIssue = [
+                    // Datos para crear el issue en Jira
+                    def jiraIssueInput = [
                         fields: [
-                            project: [key: 'TESTEAME'], // Usa el clave del proyecto
+                            project: [ key: 'TESTEAME' ], // Asegúrate de que el project key sea correcto
                             summary: 'Resultados de pruebas automatizadas',
                             description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
-                            issuetype: [name: 'Bug']//, // Asegúrate de que este tipo de issue existe
-                            //priority: [name: 'High'] // Asegúrate de que esta prioridad existe
+                            issuetype: [ name: 'Bug' ]
                         ]
                     ]
 
-                    // Crear un nuevo caso en Jira
-                    def testIssues = [issueUpdates: [testIssue]]
-                    def response = jiraNewIssues issues: testIssues, site: jiraSite
+                    // Creación del issue en Jira
+                    def response = jiraNewIssue issue: jiraIssueInput, site: 'PruebaEmpresa'
+                    echo "Jira issue response: ${response}"
 
-                    // Comprobar el éxito de la creación
-                    echo response.successful.toString()
-                    def jiraIssueKey = response.data[0].key // Obtén la clave del issue creado
+                    // Verificación del issueKey
+                    def issueKey = response?.data?.key
+                    if (!issueKey) {
+                        error "No se pudo obtener el issueKey de la respuesta de Jira"
+                    } else {
+                        echo "IssueKey obtenido: ${issueKey}"
+                    }
 
-                    // Adjuntar los reportes en HTML y PDF
-                    jiraAttachFiles idOrKey: jiraIssueKey, files: [HTML_REPORT, PDF_REPORT]
+                    // Rutas de los archivos de reportes (Ajusta según sea necesario)
+                    def attachFilePathHtml = '/ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html'
+                    def attachFilePathPdf = 'ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf'
+
+                    // Validación de los archivos antes de intentar adjuntarlos
+                    def fileHtml = new File(attachFilePathHtml)
+                    def filePdf = new File(attachFilePathPdf)
+
+                    if (fileHtml.exists() && filePdf.exists()) {
+                        try {
+                            // Adjuntar archivo HTML
+                            def attachHtmlResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: fileHtml
+                            echo "Archivo HTML adjuntado: ${attachHtmlResponse}"
+
+                            // Adjuntar archivo PDF
+                            def attachPdfResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: filePdf
+                            echo "Archivo PDF adjuntado: ${attachPdfResponse}"
+
+                        } catch (Exception e) {
+                            error "Error adjuntando archivos: ${e.message}"
+                        }
+                    } else {
+                        error "No se encontraron los archivos a adjuntar. Verifica las rutas: HTML (${attachFilePathHtml}), PDF (${attachFilePathPdf})"
+                    }
                 }
             }
         }
+    }
+}
 
         stage('Actualizar estado de Jira') {
             steps {
