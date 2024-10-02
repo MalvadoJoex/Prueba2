@@ -248,13 +248,66 @@ stage('Generar reportes') {
     //         }
     //     }
 
+    // stage('Crear caso en Jira') {
+    //         steps {
+    //             script {
+    //                 // Datos para crear el issue en Jira
+    //                 def jiraIssueInput = [
+    //                     fields: [
+    //                         project: [ key: 'TESTEAME' ], // Asegúrate de que el project key sea correcto
+    //                         summary: 'Resultados de pruebas automatizadas',
+    //                         description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
+    //                         issuetype: [ name: 'Bug' ]
+    //                     ]
+    //                 ]
+
+    //                 // Creación del issue en Jira
+    //                 def response = jiraNewIssue issue: jiraIssueInput, site: 'PruebaEmpresa'
+    //                 echo "Jira issue response: ${response}"
+
+    //                 // Verificación del issueKey
+    //                 def issueKey = response?.data?.key
+    //                 if (!issueKey) {
+    //                     error "No se pudo obtener el issueKey de la respuesta de Jira"
+    //                 } else {
+    //                     echo "IssueKey obtenido: ${issueKey}"
+    //                 }
+
+    //                 // Rutas de los archivos de reportes (Ajusta según sea necesario)
+    //                 def attachFilePathHtml = '/ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html'
+    //                 def attachFilePathPdf = 'ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf'
+
+    //                 // Validación de los archivos antes de intentar adjuntarlos
+    //                 def fileHtml = new File(attachFilePathHtml)
+    //                 def filePdf = new File(attachFilePathPdf)
+
+    //                 if (fileHtml.exists() && filePdf.exists()) {
+    //                     try {
+    //                         // Adjuntar archivo HTML
+    //                         def attachHtmlResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: fileHtml
+    //                         echo "Archivo HTML adjuntado: ${attachHtmlResponse}"
+
+    //                         // Adjuntar archivo PDF
+    //                         def attachPdfResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: filePdf
+    //                         echo "Archivo PDF adjuntado: ${attachPdfResponse}"
+
+    //                     } catch (Exception e) {
+    //                         error "Error adjuntando archivos: ${e.message}"
+    //                     }
+    //                 } else {
+    //                     error "No se encontraron los archivos a adjuntar. Verifica las rutas: HTML (${attachFilePathHtml}), PDF (${attachFilePathPdf})"
+    //                 }
+    //             }
+    //         }
+    //     }
+
     stage('Crear caso en Jira') {
             steps {
                 script {
                     // Datos para crear el issue en Jira
                     def jiraIssueInput = [
                         fields: [
-                            project: [ key: 'TESTEAME' ], // Asegúrate de que el project key sea correcto
+                            project: [ key: 'TESTEAME' ],
                             summary: 'Resultados de pruebas automatizadas',
                             description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.',
                             issuetype: [ name: 'Bug' ]
@@ -273,29 +326,29 @@ stage('Generar reportes') {
                         echo "IssueKey obtenido: ${issueKey}"
                     }
 
-                    // Rutas de los archivos de reportes (Ajusta según sea necesario)
-                    def attachFilePathHtml = '/ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html'
-                    def attachFilePathPdf = 'ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf'
+                    // Buscar los archivos de reportes
+                    def attachFilePathHtml = findFiles(glob: 'ExtentReports/SparkReport_*/HtmlReport/ExtentHtml.html')
+                    def attachFilePathPdf = findFiles(glob: 'ExtentReports/SparkReport_*/PdfReport/ExtentPdf.pdf')
 
-                    // Validación de los archivos antes de intentar adjuntarlos
-                    def fileHtml = new File(attachFilePathHtml)
-                    def filePdf = new File(attachFilePathPdf)
-
-                    if (fileHtml.exists() && filePdf.exists()) {
-                        try {
-                            // Adjuntar archivo HTML
-                            def attachHtmlResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: fileHtml
-                            echo "Archivo HTML adjuntado: ${attachHtmlResponse}"
-
-                            // Adjuntar archivo PDF
-                            def attachPdfResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: filePdf
-                            echo "Archivo PDF adjuntado: ${attachPdfResponse}"
-
-                        } catch (Exception e) {
-                            error "Error adjuntando archivos: ${e.message}"
-                        }
-                    } else {
+                    // Verificar si se encontraron los archivos
+                    if (attachFilePathHtml.isEmpty() || attachFilePathPdf.isEmpty()) {
                         error "No se encontraron los archivos a adjuntar. Verifica las rutas: HTML (${attachFilePathHtml}), PDF (${attachFilePathPdf})"
+                    }
+
+                    // Adjuntar los archivos en Jira
+                    try {
+                        attachFilePathHtml.each { file ->
+                            def attachHtmlResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: file
+                            echo "Archivo HTML adjuntado: ${attachHtmlResponse}"
+                        }
+
+                        attachFilePathPdf.each { file ->
+                            def attachPdfResponse = jiraAddAttachment site: 'PruebaEmpresa', issueKey: issueKey, file: file
+                            echo "Archivo PDF adjuntado: ${attachPdfResponse}"
+                        }
+
+                    } catch (Exception e) {
+                        error "Error adjuntando archivos: ${e.message}"
                     }
                 }
             }
