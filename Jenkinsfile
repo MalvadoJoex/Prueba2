@@ -80,28 +80,34 @@ stage('Extraer tags y ejecutar pruebas') {
     }
 }
         
-        stage('Generar reportes') {
+stage('Generar reportes') {
     steps {
         script {
             // Generar los reportes en PDF y HTML
             echo "Generando reportes HTML y PDF..."
             bat "gradle generateReport"
 
-            // Buscar el archivo HTML generado
-            def reportDir = 'ExtentReports'
-            def htmlReport = findFiles(glob: "${reportDir}/SparkReport_*/HtmlReport/ExtentHtml.html")
-            def pdfReport = findFiles(glob: "${reportDir}/SparkReport_*/PdfReport/ExtentPdf.pdf") // Ajusta esto si hay un patrón específico para el PDF
+            // Listar los archivos en el directorio ExtentReports y obtener la ruta del HTML generado
+            def output = bat(script: 'for /r ExtentReports %i in (*.html) do @echo %i', returnStdout: true).trim()
+            echo "Archivos generados: ${output}"
 
-            if (htmlReport) {
-                echo "Archivo HTML encontrado: ${htmlReport[0].path}"
-                archiveArtifacts artifacts: "${htmlReport[0].path}", allowEmptyArchive: false
+            // Si se encontró el archivo HTML
+            if (output) {
+                def htmlReportPath = output.split("\r\n")[0] // Asumimos que el primer archivo es el correcto
+                echo "Archivo HTML encontrado: ${htmlReportPath}"
+                archiveArtifacts artifacts: htmlReportPath, allowEmptyArchive: false
             } else {
                 echo "No se encontró archivo HTML."
             }
 
-            if (pdfReport) {
-                echo "Archivo PDF encontrado: ${pdfReport[0].path}"
-                archiveArtifacts artifacts: "${pdfReport[0].path}", allowEmptyArchive: false
+            // Repetir para PDF si es necesario
+            def pdfOutput = bat(script: 'for /r ExtentReports %i in (*.pdf) do @echo %i', returnStdout: true).trim()
+            echo "Archivos PDF generados: ${pdfOutput}"
+
+            if (pdfOutput) {
+                def pdfReportPath = pdfOutput.split("\r\n")[0]
+                echo "Archivo PDF encontrado: ${pdfReportPath}"
+                archiveArtifacts artifacts: pdfReportPath, allowEmptyArchive: false
             } else {
                 echo "No se encontró archivo PDF."
             }
