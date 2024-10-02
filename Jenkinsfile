@@ -159,7 +159,7 @@ stage('Generar reportes') {
             steps {
                 script {
                     // Crear un nuevo caso en Jira
-                    jiraNewIssue site: 'pruebasekt.atlassian.net', projectKey: 'PRUEB', issueType: 'Test', summary: 'Resultados de pruebas automatizadas', description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.', priority: 'Major'
+                    jiraNewIssue site: 'pruebasekt', projectKey: 'PRUEB', issueType: 'Test', summary: 'Resultados de pruebas automatizadas', description: 'Las pruebas automatizadas se ejecutaron correctamente. Ver adjuntos para más detalles.', priority: 'Major'
                     
                     // Adjuntar los reportes en HTML y PDF
                     jiraAttachFiles idOrKey: jiraIssueKey, files: [HTML_REPORT, PDF_REPORT]
