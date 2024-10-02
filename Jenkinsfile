@@ -5,7 +5,7 @@ pipeline {
         // Variables de entorno para Jira y el directorio de reportes
         JIRA_URL = 'https://pruebasekt.atlassian.net'
         jiraSite = 'PruebaEmpresa'
-        REPORTS_DIR = "ExtentReports/SparkReport_*/"
+        REPORTS_DIR = "ExtentReports/SparkReport_*"
         PDF_REPORT = "${REPORTS_DIR}/HtmlReport/ExtentHtml.html"
         HTML_REPORT = "${REPORTS_DIR}/PdfReport/ExtentPdf.pdf"
     }
@@ -300,6 +300,7 @@ stage('Generar reportes') {
                 }
             }
         }
+
 
         stage('Actualizar estado de Jira') {
             steps {
