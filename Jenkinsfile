@@ -438,8 +438,10 @@ stage('Generar reportes') {
             // Rutas de los archivos de reportes
             // def attachFilePathHtml = 'ruta/del/reporte/ExtentHtml.html'
             // def attachFilePathPdf = 'ruta/del/reporte/ExtentHtml.pdf'
-            def attachFilePathHtml = "ExtentReports/SparkReport_%201_oct_24%2015_00_13/HtmlReport/ExtentHtml.html"
-            def attachFilePathPdf = "ExtentReports/SparkReport_%201_oct_24%2015_00_13/PdfReport/ExtentPdf.pdf"
+            // def attachFilePathHtml = "ExtentReports/SparkReport_ 1_oct_24 15_00_13/HtmlReport/ExtentHtml.html"
+            // def attachFilePathPdf = "ExtentReports/SparkReport_ 1_oct_24 15_00_13/PdfReport/ExtentPdf.pdf"
+            def attachFilePathHtml = String.format('ExtentReports/SparkReport_ %s/HtmlReport/ExtentHtml.html', '1_oct_24 15_00_13')
+            def attachFilePathPdf = String.format('ExtentReports/SparkReport_ %s/PdfReport/ExtentPdf.pdf', '1_oct_24 15_00_13')
 
             
 
