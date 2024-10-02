@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Variables de entorno para Jira y el directorio de reportes
         JIRA_URL = 'https://pruebasekt.atlassian.net'
-        jiraSite = 'pruebasekt'
+        jiraSite = 'PruebaEmpresa'
         REPORTS_DIR = "build/reports"
         PDF_REPORT = "${REPORTS_DIR}/report.pdf"
         HTML_REPORT = "${REPORTS_DIR}/report.html"
