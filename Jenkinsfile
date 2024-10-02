@@ -554,10 +554,10 @@ stage('Generar reportes') {
         }
     }
     
-    // post {
-    //     always {
-    //         // Limpiar workspace
-    //         //cleanWs()
-    //     }
-    // }
+    post {
+        always {
+            // Limpiar workspace
+            cleanWs()
+        }
+    }
 }

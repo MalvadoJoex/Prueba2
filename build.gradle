@@ -1,16 +1,83 @@
+// plugins {
+//     id 'java'
+    
+// }
+
+// group' ekt_ecommerce'
+// version 'v0.0.2'
+
+// java {
+//     sourceCompatibility = JavaVersion.VERSION_17
+// }
+
+// repositories{
+//     mavenCentral()
+// }
+
+// dependencies {
+//     // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+//     testImplementation group: 'junit', name: 'junit', version: '4.12'
+//     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.13.0'
+
+//     //Cucumber
+//     implementation group: 'io.cucumber', name: 'cucumber-java', version: '7.14.0'
+//     // https://mvnrepository.com/artifact/io.cucumber/cucumber-junit-platform-engine
+//     testImplementation group: 'io.cucumber', name: 'cucumber-junit-platform-engine', version: '7.14.0'
+//     implementation group: 'info.cukes', name: 'cucumber-java', version: '1.2.6', ext: 'pom'
+//     testImplementation 'io.cucumber:cucumber-junit:7.12.1'
+//     implementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.5.3'
+
+//     //Reporteador
+//     implementation group: 'tech.grasshopper', name: 'extentreports-cucumber6-adapter', version: '2.17.0'
+//     implementation 'tech.grasshopper:extentreports-cucumber7-adapter:1.7.0'
+//     implementation 'com.aventstack:extentreports:5.0.9'
+
+//     //Appium
+//     // https://mvnrepository.com/artifact/org.testng/testng
+//     testImplementation group: 'org.testng', name: 'testng', version: '7.10.1'
+//     // https://mvnrepository.com/artifact/io.appium/java-client
+//     implementation group: 'io.appium', name: 'java-client', version: '9.2.2'
+// }
+
+// // Tarea para generar reportes
+// task generateReport(type: Copy) {
+//     // Define cómo generar el reporte aquí, puede variar según tu configuración
+//     from("$buildDir/reports/tests/test") {
+//         include '**/*.html' // Ajusta según tus archivos de reporte generados
+//     }
+//     into("$buildDir/reports/generated") // Directorio donde se generarán los reportes
+// }
+
+// // Esta tarea se ejecuta después de que las pruebas se hayan completado
+// test.finalizedBy generateReport
+
+// test{
+//     useJUnitPlatform()
+//     systemProperty "cucumber.options", System.getProperty("cucumber.options")
+    
+// }
+
+import java.text.SimpleDateFormat
+
 plugins {
     id 'java'
-    
 }
 
-group' ekt_ecommerce'
+group 'ekt_ecommerce'
 version 'v0.0.2'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
-repositories{
+// Obtener la fecha y hora actual para usar en el nombre de la carpeta
+def dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+def timestamp = dateFormat.format(new Date())
+
+// Define la ruta base para los reportes
+def reportsBaseDir = "$buildDir/ExtentReports/SparkReport_${timestamp}"
+
+repositories {
     mavenCentral()
 }
 
@@ -19,23 +86,18 @@ dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.13.0'
 
-    //Cucumber
+    // Cucumber
     implementation group: 'io.cucumber', name: 'cucumber-java', version: '7.14.0'
-    // https://mvnrepository.com/artifact/io.cucumber/cucumber-junit-platform-engine
     testImplementation group: 'io.cucumber', name: 'cucumber-junit-platform-engine', version: '7.14.0'
-    implementation group: 'info.cukes', name: 'cucumber-java', version: '1.2.6', ext: 'pom'
-    testImplementation 'io.cucumber:cucumber-junit:7.12.1'
     implementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.5.3'
 
-    //Reporteador
-    implementation group: 'tech.grasshopper', name: 'extentreports-cucumber6-adapter', version: '2.17.0'
+    // Reporteador
+    implementation 'tech.grasshopper:extentreports-cucumber6-adapter:2.17.0'
     implementation 'tech.grasshopper:extentreports-cucumber7-adapter:1.7.0'
     implementation 'com.aventstack:extentreports:5.0.9'
 
-    //Appium
-    // https://mvnrepository.com/artifact/org.testng/testng
+    // Appium
     testImplementation group: 'org.testng', name: 'testng', version: '7.10.1'
-    // https://mvnrepository.com/artifact/io.appium/java-client
     implementation group: 'io.appium', name: 'java-client', version: '9.2.2'
 }
 
@@ -45,14 +107,23 @@ task generateReport(type: Copy) {
     from("$buildDir/reports/tests/test") {
         include '**/*.html' // Ajusta según tus archivos de reporte generados
     }
-    into("$buildDir/reports/generated") // Directorio donde se generarán los reportes
+    into("$reportsBaseDir/HtmlReport") // Directorio donde se generarán los reportes HTML
+
+    // Agregar aquí cualquier archivo adicional que desees incluir
+    from("$buildDir/reports/tests/test") {
+        include '**/*.pdf' // Incluye PDF en el reporte
+    }
+    into("$reportsBaseDir/PdfReport") // Directorio donde se generarán los reportes PDF
 }
 
 // Esta tarea se ejecuta después de que las pruebas se hayan completado
 test.finalizedBy generateReport
 
-test{
+test {
     useJUnitPlatform()
     systemProperty "cucumber.options", System.getProperty("cucumber.options")
-    
+    // Configuración para los reportes de Cucumber
+    reports {
+        html.destination = file("${reportsBaseDir}/HtmlReport") // Personalizar la ruta para el reporte HTML
+    }
 }
