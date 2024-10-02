@@ -63,11 +63,11 @@ plugins {
     id 'java'
 }
 
-group 'ekt_ecommerce'
-version 'v0.0.2'
+group 'Prueba_pru'
+version 'v0.0.1'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 // Obtener la fecha y hora actual para usar en el nombre de la carpeta
