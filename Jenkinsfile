@@ -496,7 +496,7 @@ stage('Crear caso en Jira') {
             }
 
             // Listar archivos en el directorio de reportes
-            bat 'dir ExtentReports/SparkReport_*'
+            // bat 'dir ExtentReports/SparkReport_*'
 
             // Verificación de archivos usando comandos de shell de Windows
             bat """
